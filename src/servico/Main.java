@@ -3,9 +3,9 @@ package servico;
 import java.util.Scanner;
 import dao.ClienteDao;
 import dao.FuncionarioDao;
-import dao.HotelDao; // Importe o DAO do Hotel
-import dao.QuartoDao; // Importe o DAO do Quarto
-import dao.ReservaDao; // Importe o DAO da Reserva
+import dao.HotelDao;
+import dao.QuartoDao;
+import dao.ReservaDao;
 
 public class Main {
     public static void main(String[] args) {
@@ -17,15 +17,16 @@ public class Main {
         System.out.println("3 - Cadastrar Quarto");
         System.out.println("4 - Cadastrar Pagamento");
         System.out.println("5 - Cadastrar Hotel");
-        System.out.println("6 - Excluir Cliente");
-        System.out.println("7 - Excluir Funcionário");
-        System.out.println("8 - Excluir Hotel");
-        System.out.println("9 - Excluir Quarto");
-        System.out.println("10 - Excluir Reserva"); // Adicionando a opção de excluir reserva
+        System.out.println("6 - Cadastrar Reserva");
+        System.out.println("7 - Excluir Cliente");
+        System.out.println("8 - Excluir Funcionário");
+        System.out.println("9 - Excluir Hotel");
+        System.out.println("10 - Reduzir Quantidade de Quarto");
+        System.out.println("11 - Excluir Reserva");
         System.out.print("Opção: ");
         
         int opcao = scanner.nextInt();
-        scanner.nextLine(); // Limpar o buffer de entrada
+        scanner.nextLine(); 
 
         switch (opcao) {
             case 1:
@@ -44,19 +45,22 @@ public class Main {
                 cadastrarHotel();
                 break;
             case 6:
-                excluirCliente();
+                cadastrarReserva();
                 break;
             case 7:
-                excluirFuncionario();
+                excluirCliente();
                 break;
             case 8:
-                excluirHotel();
+                excluirFuncionario();
                 break;
             case 9:
-                excluirQuarto();
+                excluirHotel();
                 break;
             case 10:
-                excluirReserva(); // Chamar o método para excluir reserva
+                reduzirQuantidadeQuarto();
+                break;
+            case 11:
+                excluirReserva();
                 break;
             default:
                 System.out.println("Opção inválida!");
@@ -70,19 +74,14 @@ public class Main {
         servicoCliente.cadastrarCliente();
     }
 
+    public static void cadastrarReserva() {
+        ServicoReserva servicoReserva = new ServicoReserva();
+        servicoReserva.cadastrarReserva();
+    }
+
     public static void cadastrarFuncionario() {
         ServicoFuncionario servicoFuncionario = new ServicoFuncionario();
         servicoFuncionario.cadastrarFuncionario();
-    }
-
-    public static void cadastrarQuarto() {
-        ServicoQuarto servicoQuarto = new ServicoQuarto();
-        servicoQuarto.cadastrarQuarto();
-    }
-
-    public static void cadastrarPagamento() {
-        ServicoPagamento servicoPagamento = new ServicoPagamento();
-        servicoPagamento.cadastrarPagamento();
     }
 
     public static void cadastrarHotel() {
@@ -90,73 +89,58 @@ public class Main {
         servicoHotel.cadastrarHotel();
     }
 
+    public static void cadastrarPagamento() {
+        ServicoPagamento servicoPagamento = new ServicoPagamento();
+        servicoPagamento.cadastrarPagamento();
+    }
+
+    public static void cadastrarQuarto() {
+        ServicoQuarto servicoQuarto = new ServicoQuarto();
+        servicoQuarto.cadastrarQuarto();
+    }
+
     public static void excluirCliente() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Digite o CPF do cliente a ser excluído: ");
-        String cpf = scanner.nextLine();
         ClienteDao clienteDao = new ClienteDao();
-        if (clienteDao.clienteExiste(cpf)) {
-            clienteDao.excluirCliente(cpf);
-            System.out.println("Cliente excluído com sucesso!");
-        } else {
-            System.out.println("Cliente não encontrado!");
-        }
-        scanner.close();
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Digite o CPF do cliente a ser excluído: ");
+        String cpf = sc.nextLine();
+        clienteDao.excluirCliente(cpf);
+        sc.close();
     }
 
     public static void excluirFuncionario() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Digite o CPF do funcionário a ser excluído: ");
-        String cpf = scanner.nextLine();
         FuncionarioDao funcionarioDao = new FuncionarioDao();
-        if (funcionarioDao.funcionarioExiste(cpf)) {
-            funcionarioDao.excluirFuncionario(cpf);
-            System.out.println("Funcionário excluído com sucesso!");
-        } else {
-            System.out.println("Funcionário não encontrado!");
-        }
-        scanner.close();
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Digite o CPF do funcionário a ser excluído: ");
+        String cpf = sc.nextLine();
+        funcionarioDao.excluirFuncionario(cpf);
+        sc.close();
     }
 
     public static void excluirHotel() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Digite o CNPJ do hotel a ser excluído: ");
-        String cnpj = scanner.nextLine();
         HotelDao hotelDao = new HotelDao();
-        if (hotelDao.hotelExiste(cnpj)) {
-            hotelDao.excluirHotel(cnpj);
-            System.out.println("Hotel excluído com sucesso!");
-        } else {
-            System.out.println("Hotel não encontrado!");
-        }
-        scanner.close();
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Digite o CNPJ do hotel a ser excluído: ");
+        String cnpj = sc.nextLine();
+        hotelDao.excluirHotel(cnpj);
+        sc.close();
     }
 
-    public static void excluirQuarto() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Digite o tipo do quarto a ser excluído: ");
-        String tipo = scanner.nextLine();
+    public static void reduzirQuantidadeQuarto() {
         QuartoDao quartoDao = new QuartoDao();
-        if (quartoDao.quartoExiste(tipo)) {
-            quartoDao.excluirQuarto(tipo);
-            System.out.println("Quarto excluído com sucesso!");
-        } else {
-            System.out.println("Quarto não encontrado!");
-        }
-        scanner.close();
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Digite o código do quarto a ser reduzida a quantidade: ");
+        String codigo = sc.nextLine();
+        quartoDao.reduzirQuantidadeQuarto(codigo);
+        sc.close();
     }
 
     public static void excluirReserva() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Digite o CPF do titular da reserva a ser excluída: ");
-        String cpf = scanner.nextLine();
         ReservaDao reservaDao = new ReservaDao();
-        if (reservaDao.reservaExiste(cpf)) {
-            reservaDao.excluirReserva(cpf);
-            System.out.println("Reserva excluída com sucesso!");
-        } else {
-            System.out.println("Reserva não encontrada!");
-        }
-        scanner.close();
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Digite o CPF do cliente cuja reserva será excluída: ");
+        String cpf = sc.nextLine();
+        reservaDao.excluirReserva(cpf);
+        sc.close();
     }
 }

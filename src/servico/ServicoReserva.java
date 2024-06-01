@@ -1,55 +1,58 @@
 package servico;
 
 import java.util.Scanner;
-import entidades.Reserva;
-import dao.ClienteDao;
 import dao.ReservaDao;
+import entidades.Reserva;
 
 public class ServicoReserva {
 
     public void cadastrarReserva() {
         Scanner sc = new Scanner(System.in);
 
-        System.out.println("Digite o CPF do Cliente: ");
+        System.out.println("Digite os dados da reserva:");
+        System.out.print("CPF: ");
+        String cpf = sc.nextLine();
+        System.out.print("Nome: ");
+        String nome = sc.nextLine();
+        System.out.print("Data de Nascimento: ");
+        String dataNascimento = sc.nextLine();
+        System.out.print("Telefone: ");
+        String telefone = sc.nextLine();
+        System.out.print("Email: ");
+        String email = sc.nextLine();
+        System.out.print("Data de Início (AAAA-MM-DD): ");
+        String dataInicio = sc.nextLine();
+        System.out.print("Data de Fim (AAAA-MM-DD): ");
+        String dataFim = sc.nextLine();
+        System.out.print("Tipo de Quarto: ");
+        String tipoQuarto = sc.nextLine();
+        System.out.print("Tipo de Pagamento: ");
+        String tipoPagamento = sc.nextLine();
+
+        Reserva reserva = new Reserva();
+        reserva.setCpf(cpf);
+        reserva.setNome(nome);
+        reserva.setDatanascimento(dataNascimento);
+        reserva.setTelefone(telefone);
+        reserva.setEmail(email);
+        reserva.setDatainicio(dataInicio);
+        reserva.setDatafim(dataFim);
+        reserva.setTipoquarto(tipoQuarto);
+        reserva.setTipagamento(tipoPagamento);
+
+        ReservaDao reservaDao = new ReservaDao();
+        reservaDao.cadastrarReserva(reserva);
+
+        sc.close();
+    }
+
+    public void excluirReserva() {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Digite o CPF da reserva que deseja excluir: ");
         String cpf = sc.nextLine();
 
-        ClienteDao clienteDao = new ClienteDao();
-
-        if (clienteDao.clienteExiste(cpf)) {
-            System.out.println("Digite o nome do Cliente: ");
-            String nome = sc.nextLine();
-            System.out.println("Digite a data de nascimento (dd/MM/yyyy): ");
-            String datanascimento = sc.nextLine();
-            System.out.println("Digite o telefone: ");
-            String telefone = sc.nextLine();
-            System.out.println("Digite o email: ");
-            String email = sc.nextLine();
-            System.out.println("Digite a data de início (dd/MM/yyyy): ");
-            String datainicio = sc.nextLine();
-            System.out.println("Digite a data de fim (dd/MM/yyyy): ");
-            String datafim = sc.nextLine();
-            System.out.println("Digite o tipo de quarto: ");
-            String tipoquarto = sc.nextLine();
-            System.out.println("Digite o tipo de pagamento: ");
-            String tipagamento = sc.nextLine();
-
-            Reserva reserva = new Reserva();
-            reserva.setCpf(cpf);
-            reserva.setNome(nome);
-            reserva.setDatanascimento(datanascimento);
-            reserva.setTelefone(telefone);
-            reserva.setEmail(email);
-            reserva.setDatainicio(datainicio);
-            reserva.setDatafim(datafim);
-            reserva.setTipoquarto(tipoquarto);
-            reserva.setTipagamento(tipagamento);
-
-            new ReservaDao().cadastrarReserva(reserva);
-
-            System.out.println("Reserva cadastrada com sucesso!");
-        } else {
-            System.out.println("Cliente não encontrado. Cadastro não realizado.");
-        }
+        ReservaDao reservaDao = new ReservaDao();
+        reservaDao.excluirReserva(cpf);
 
         sc.close();
     }

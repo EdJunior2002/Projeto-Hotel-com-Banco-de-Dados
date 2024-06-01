@@ -1,14 +1,16 @@
 package dao;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import conexao.ConexaoReserva;
-import conexao.ConexaoCliente;
 import entidades.Reserva;
 
+
 public class ReservaDao {
+
+    private QuartoDao quartoDao = new QuartoDao(); // Instanciando o QuartoDao para manipulação de quartos
 
     public void cadastrarReserva(Reserva reserva) {
         String sql = "INSERT INTO RESERVAA (CPF, NOME, DATANASCIMENTO, TELEFONE, EMAIL, DATAINICIO, DATAFIM, TIPOQUARTO, TIPOPAGAMENTO) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -26,57 +28,80 @@ public class ReservaDao {
             ps.setString(9, reserva.getTipagamento());
 
             ps.execute();
+
+            // Reduz a quantidade de quartos disponíveis
+            quartoDao.reduzirQuantidadeQuarto(reserva.getTipoquarto());
+
         } catch (SQLException e) {
             e.printStackTrace();    
         }
     }
 
-    public boolean clienteExiste (String cpf) {
-        String sql = "SELECT COUNT(*) FROM CLIENTEE WHERE CPF = ?";
-        try (Connection conn = ConexaoCliente.getConexao();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, cpf);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-    
-
-    public boolean reservaExiste(String cpf) {
-        String sql = "SELECT COUNT(*) FROM RESERVAA WHERE CPF = ?";
-        try (Connection conn = ConexaoReserva.getConexao();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, cpf);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
     public void excluirReserva(String cpf) {
         String sql = "DELETE FROM RESERVAA WHERE CPF = ?";
-        try (Connection conn = ConexaoReserva.getConexao();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        String tipoQuarto = "";
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            conn = ConexaoReserva.getConexao();
+            ps = conn.prepareStatement(sql);
             ps.setString(1, cpf);
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Reserva excluída com sucesso!");
+
+                // Recuperar o tipo de quarto antes de excluir a reserva
+                tipoQuarto = getTipoQuartoByCpf(cpf);
+
+                // Aumenta a quantidade de quartos disponíveis
+                if (!tipoQuarto.isEmpty()) {
+                    quartoDao.aumentarQuantidadeQuarto(tipoQuarto);
+                }
             } else {
-                System.out.println("Nenhuma reserva encontrada com o CPF reserva fornecido.");
+                System.out.println("Nenhuma reserva encontrada com o CPF fornecido.");
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
+
+    private String getTipoQuartoByCpf(String cpf) {
+        String sql = "SELECT TIPOQUARTO FROM RESERVAA WHERE CPF = ?";
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        String tipoQuarto = "";
+
+        try {
+            conn = ConexaoReserva.getConexao();
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, cpf);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                tipoQuarto = rs.getString("TIPOQUARTO");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return tipoQuarto;
+    }
 }
-
-

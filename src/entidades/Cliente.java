@@ -9,8 +9,6 @@ public class Cliente {
     private String telefone;
     private String email;
 
-    // Getters e setters
-
     public String getNome() {
         return nome;
     }

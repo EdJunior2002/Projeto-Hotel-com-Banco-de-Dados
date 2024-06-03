@@ -9,7 +9,7 @@ public class Funcionario {
     private String telefone;
     private String email;
 
-    // Getters e Setters
+
     public String getNome() {
         return nome;
     }

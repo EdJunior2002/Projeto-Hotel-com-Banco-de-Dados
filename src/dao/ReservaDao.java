@@ -5,12 +5,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import conexao.ConexaoReserva;
+import conexao.ConexaoCliente;
 import entidades.Reserva;
-
 
 public class ReservaDao {
 
-    private QuartoDao quartoDao = new QuartoDao(); // Instanciando o QuartoDao para manipulação de quartos
+    private QuartoDao quartoDao = new QuartoDao(); 
 
     public void cadastrarReserva(Reserva reserva) {
         String sql = "INSERT INTO RESERVAA (CPF, NOME, DATANASCIMENTO, TELEFONE, EMAIL, DATAINICIO, DATAFIM, TIPOQUARTO, TIPOPAGAMENTO) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -29,12 +29,26 @@ public class ReservaDao {
 
             ps.execute();
 
-            // Reduz a quantidade de quartos disponíveis
             quartoDao.reduzirQuantidadeQuarto(reserva.getTipoquarto());
 
         } catch (SQLException e) {
             e.printStackTrace();    
         }
+    }
+
+    public boolean clienteExiste(String cpf) {
+        String sql = "SELECT COUNT(*) FROM CLIENTEE WHERE CPF = ?";
+        try (Connection conn = ConexaoCliente.getConexao();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, cpf);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public void excluirReserva(String cpf) {
@@ -52,10 +66,8 @@ public class ReservaDao {
             if (rowsAffected > 0) {
                 System.out.println("Reserva excluída com sucesso!");
 
-                // Recuperar o tipo de quarto antes de excluir a reserva
                 tipoQuarto = getTipoQuartoByCpf(cpf);
 
-                // Aumenta a quantidade de quartos disponíveis
                 if (!tipoQuarto.isEmpty()) {
                     quartoDao.aumentarQuantidadeQuarto(tipoQuarto);
                 }

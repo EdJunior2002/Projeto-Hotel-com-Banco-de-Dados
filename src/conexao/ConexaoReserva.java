@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public class ConexaoReserva {
 
-    private static final String url = "jdbc:mysql://localhost:3306/reserva"; // Alterado para o banco de dados de reserva
+    private static final String url = "jdbc:mysql://localhost:3306/reserva"; 
     private static final String user = "root";
     private static final String password = "admin";
 

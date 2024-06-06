@@ -5,10 +5,7 @@ import entidades.Pagamento;
 import dao.PagamentoDao;
 
 public class ServicoPagamento {
-
-    
-        public void cadastrarPagamento() {
-
+    public void cadastrarPagamento() {
         Scanner sc = new Scanner(System.in);
 
         System.out.println("Digite Tipo de pagamento: ");
@@ -22,7 +19,7 @@ public class ServicoPagamento {
 
         new PagamentoDao().cadastrarPagamento(p);
 
-        System.out.println("Pagamento concluido com sucesso!");
+     
 
         sc.close();
     }
